@@ -7,8 +7,11 @@ try:
 except ImportError:
     from Queue import Queue
 
-from .functions import *
-
+#from .functions import *
+ACT_RELU = "relu"
+ACT_LEAKY_RELU = "leaky_relu"
+ACT_ELU = "elu"
+ACT_NONE = "none"
 
 class ABN(nn.Module):
     """Activated Batch Normalization
@@ -80,7 +83,7 @@ class ABN(nn.Module):
             rep += ')'
         return rep.format(name=self.__class__.__name__, **self.__dict__)
 
-
+'''
 class InPlaceABN(ABN):
     """InPlace Activated Batch Normalization"""
 
@@ -172,3 +175,5 @@ class InPlaceABNSync(ABN):
         else:
             rep += ')'
         return rep.format(name=self.__class__.__name__, **self.__dict__)
+'''
+__all__ = ["ACT_RELU", "ACT_LEAKY_RELU", "ACT_ELU", "ACT_NONE"]

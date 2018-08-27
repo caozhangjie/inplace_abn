@@ -33,6 +33,8 @@ parser.add_argument("data", metavar="IN_DIR", type=str, help="Path to dataset")
 parser.add_argument("output", metavar="OUT_DIR", type=str, help="Path to output folder")
 parser.add_argument("--world-size", metavar="WS", type=int, default=1, help="Number of GPUs")
 parser.add_argument("--rank", metavar="RANK", type=int, default=0, help="GPU id")
+parser.add_argument("--threshold", metavar="THRESHOLD", type=int, default=100000, help="GPU id")
+
 
 
 def flip(x, dim):
@@ -162,13 +164,12 @@ def main():
         (0.41738699, 0.45732192, 0.46886091),
         (0.25685097, 0.26509955, 0.29067996),
     )
-    dataset = SegmentationDataset(args.data, transformation)
+    dataset = SegmentationDataset(args.data, args.threshold, transformation)
     data_loader = DataLoader(
         dataset,
-        batch_size=1,
+        batch_size=4,
         pin_memory=True,
-        sampler=DistributedSampler(dataset, args.world_size, args.rank),
-        num_workers=2,
+        num_workers=4,
         collate_fn=segmentation_collate,
         shuffle=False
     )
@@ -203,7 +204,7 @@ def load_snapshot(snapshot_file):
     print("--- Loading model from snapshot")
 
     # Create network
-    norm_act = partial(InPlaceABN, activation="leaky_relu", slope=.01)
+    norm_act = partial(ABN, activation="leaky_relu", slope=.01)
     body = models.__dict__["net_wider_resnet38_a2"](norm_act=norm_act, dilation=(1, 2, 4, 4))
     head = DeeplabV3(4096, 256, 256, norm_act=norm_act, pooling_size=(84, 84))
 

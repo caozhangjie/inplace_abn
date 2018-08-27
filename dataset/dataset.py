@@ -5,12 +5,12 @@ import torch
 from PIL import Image
 from os import path
 from torch.utils.data import Dataset
-
+import os
 
 class SegmentationDataset(Dataset):
     _EXTENSIONS = ["*.jpg", "*.jpeg", "*.png"]
 
-    def __init__(self, in_dir, transform):
+    def __init__(self, in_dir, threshold, transform):
         super(SegmentationDataset, self).__init__()
 
         self.in_dir = in_dir
@@ -18,11 +18,13 @@ class SegmentationDataset(Dataset):
 
         # Find all images
         self.images = []
-        for img_path in chain(*(glob.iglob(path.join(self.in_dir, ext)) for ext in SegmentationDataset._EXTENSIONS)):
+        for sub_dir in os.listdir(self.in_dir):
+         if int(sub_dir.split(".")[0].split("_")[1]) < threshold:
+          for img_path in chain(*(glob.iglob(path.join(self.in_dir, sub_dir, ext)) for ext in SegmentationDataset._EXTENSIONS)):
             _, name_with_ext = path.split(img_path)
             idx, _ = path.splitext(name_with_ext)
             self.images.append({
-                "idx": idx,
+                "idx": sub_dir.split(".")[0] + "_" + idx,
                 "path": img_path
             })
 

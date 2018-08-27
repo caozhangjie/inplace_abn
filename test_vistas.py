@@ -14,6 +14,9 @@ parser.add_argument("--output-mode", metavar="NAME", type=str, choices=["palette
                          " -- palette: color coded predictions"
                          " -- raw: gray-scale predictions"
                          " -- prob: gray-scale predictions plus probabilities")
+parser.add_argument("--rank", metavar="gpu id", type=str, default="0", help="List of GPUs")
+parser.add_argument("--world-size", metavar="gpu number", type=str, default="1", help="Number of GPUs")
+parser.add_argument("--threshold", metavar="gpu number", type=str, default="1000", help="Number of GPUs")
 parser.add_argument("snapshot", metavar="SNAPSHOT_FILE", type=str, help="Snapshot file to load")
 parser.add_argument("data", metavar="IN_DIR", type=str, help="Path to dataset")
 parser.add_argument("output", metavar="OUT_DIR", type=str, help="Path to output folder")
@@ -40,12 +43,13 @@ def main():
 
     workers = []
 
+    gpu_list = args.rank.split(",")
+    thres_list = args.threshold.split(",")
+
     for i in range(world_size):
       if '--rank' in argslist:
-        argslist[argslist.index('--rank')+1] = str(i)
-      else:
-        argslist.append('--rank')
-        argslist.append(str(i))
+        argslist[argslist.index('--rank')+1] = gpu_list[i]
+        argslist[argslist.index('--threshold')+1] = thres_list[i]
       stdout = None if i == 0 else open("GPU_"+str(i)+".log", "w")
       print(argslist)
       p = subprocess.Popen([str(sys.executable), 'test_vistas_single_gpu.py']+argslist, stdout=stdout)
