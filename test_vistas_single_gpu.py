@@ -14,7 +14,7 @@ from torch.utils.data.distributed import DistributedSampler
 import models
 from dataset.dataset import SegmentationDataset, segmentation_collate
 from dataset.transform import SegmentationTransform
-from modules.bn import InPlaceABN
+from modules.bn import ABN
 from modules.deeplab import DeeplabV3
 
 parser = argparse.ArgumentParser(description="Testing script for the Vistas segmentation model")
@@ -31,7 +31,7 @@ parser.add_argument("--output-mode", metavar="NAME", type=str, choices=["palette
 parser.add_argument("snapshot", metavar="SNAPSHOT_FILE", type=str, help="Snapshot file to load")
 parser.add_argument("data", metavar="IN_DIR", type=str, help="Path to dataset")
 parser.add_argument("output", metavar="OUT_DIR", type=str, help="Path to output folder")
-parser.add_argument("--world-size", metavar="WS", type=int, default=1, help="Number of GPUs")
+parser.add_argument("--world_size", metavar="WS", type=int, default=1, help="Number of GPUs")
 parser.add_argument("--rank", metavar="RANK", type=int, default=0, help="GPU id")
 parser.add_argument("--threshold", metavar="THRESHOLD", type=int, default=100000, help="GPU id")
 
@@ -175,7 +175,7 @@ def main():
     )
 
     # Run testing
-    scales = eval(args.scales)
+    scales = [int(val) for val in args.scales.split(",")]
     with torch.no_grad():
         for batch_i, rec in enumerate(data_loader):
             print("Testing batch [{:3d}/{:3d}]".format(batch_i + 1, len(data_loader)))

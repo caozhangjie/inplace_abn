@@ -15,8 +15,8 @@ parser.add_argument("--output-mode", metavar="NAME", type=str, choices=["palette
                          " -- raw: gray-scale predictions"
                          " -- prob: gray-scale predictions plus probabilities")
 parser.add_argument("--rank", metavar="gpu id", type=str, default="0", help="List of GPUs")
-parser.add_argument("--world-size", metavar="gpu number", type=str, default="1", help="Number of GPUs")
-parser.add_argument("--threshold", metavar="gpu number", type=str, default="1000", help="Number of GPUs")
+parser.add_argument("--world_size", metavar="gpu number", type=str, default="1", help="Number of GPUs")
+parser.add_argument("--threshold", metavar="dataset threshold", type=str, default="1000", help="Number of GPUs")
 parser.add_argument("snapshot", metavar="SNAPSHOT_FILE", type=str, help="Snapshot file to load")
 parser.add_argument("data", metavar="IN_DIR", type=str, help="Path to dataset")
 parser.add_argument("output", metavar="OUT_DIR", type=str, help="Path to output folder")
@@ -35,10 +35,10 @@ def main():
     argslist = list(sys.argv)[1:]
     world_size = torch.cuda.device_count()
 
-    if '--world-size' in argslist:
-        world_size = int(argslist[argslist.index('--world-size')+1])
+    if '--world_size' in argslist:
+        world_size = int(argslist[argslist.index('--world_size')+1])
     else:
-        argslist.append('--world-size')
+        argslist.append('--world_size')
         argslist.append(str(world_size))
 
     workers = []
