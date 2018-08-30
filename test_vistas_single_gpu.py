@@ -167,7 +167,7 @@ def main():
     dataset = SegmentationDataset(args.data, args.threshold, transformation)
     data_loader = DataLoader(
         dataset,
-        batch_size=4,
+        batch_size=1,
         pin_memory=True,
         num_workers=4,
         collate_fn=segmentation_collate,

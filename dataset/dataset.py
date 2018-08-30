@@ -18,8 +18,8 @@ class SegmentationDataset(Dataset):
 
         # Find all images
         self.images = []
-        for sub_dir in os.listdir(self.in_dir):
-         if int(sub_dir.split(".")[0].split("_")[1]) < threshold:
+        for sub_dir in sorted(os.listdir(self.in_dir)):
+         if (threshold - 30) <= int(sub_dir.split(".")[0].split("_")[1]) < threshold:
           for img_path in chain(*(glob.iglob(path.join(self.in_dir, sub_dir, ext)) for ext in SegmentationDataset._EXTENSIONS)):
             _, name_with_ext = path.split(img_path)
             idx, _ = path.splitext(name_with_ext)
