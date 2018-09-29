@@ -156,7 +156,6 @@ def main():
     model = SegmentationModule(body, head, 256, 65, args.fusion_mode)
     model.cls.load_state_dict(cls_state)
     model = model.cuda().eval()
-    print(model)
 
     # Create data loader
     transformation = SegmentationTransform(
