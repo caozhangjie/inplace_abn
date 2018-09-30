@@ -113,3 +113,10 @@ _ext
 # setuptools
 dist/
 *.egg-info
+JAAD_cross_label/*
+JAAD_features/*
+JAAD_pos/*
+JAAD_pred_box/*
+JAAD_seg/*
+JAAD_vbb/*
+*pth.tar
