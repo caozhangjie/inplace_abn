@@ -3,7 +3,7 @@ from multiprocessing import Pool
 import os
 
 pedestrian_action = {'standing': 0, 'walking': 1, 'speed up': 2, 'nod': 3, 'looking': 4, 'handwave': 5, 'clear path': 6, 'crossing': 7, 'slow down': 8}
-label_cross = [7]
+label_cross = [2,6,7,8]
 
 def transfer_label(params):
     f_name = params['in_name']
@@ -24,5 +24,6 @@ for dir_ in os.listdir('/data/JAAD_behavioral_encode'):
     for b_name in os.listdir('/data/JAAD_behavioral_encode/'+dir_):
         if 'pedestrian' in b_name:
             params_list.append({'in_name':'/data/JAAD_behavioral_encode/'+dir_+'/'+b_name, 'out_name':save_dir+'/'+dir_+'/'+b_name})
+
 p = Pool(8)
 p.map(transfer_label, params_list)

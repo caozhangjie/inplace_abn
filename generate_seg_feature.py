@@ -115,7 +115,11 @@ class SegmentationModule(nn.Module):
     def _network(self, x, scale):
         if scale != 1:
             scaled_size = [s * scale for s in x.shape[-2:]]
+<<<<<<< HEAD
             x_up = functional.upsample(x, size=scaled_size, mode='bilinear', align_corners=True)
+=======
+            x_up = functional.interpolate(x, size=scaled_size, mode='bilinear', align_corners=True)
+>>>>>>> a85257dde9e4ae6445a0d39a6bdfe48254778e0f
         else:
             x_up = x
 
@@ -133,8 +137,13 @@ class SegmentationModule(nn.Module):
         for scale in scales:
             # Main orientation
             x_up, sem_logits = self._network(x, scale)
+<<<<<<< HEAD
             sem_logits = functional.upsample(sem_logits, size=out_size, mode='bilinear', align_corners=True)
             x_up_all.append(functional.upsample(x_up, size=out_size, mode='bilinear', align_corners=True).to("cpu"))
+=======
+            sem_logits = functional.interpolate(sem_logits, size=out_size, mode='bilinear', align_corners=True)
+            x_up_all.append(functional.interpolate(x_up, size=out_size, mode='bilinear', align_corners=True).to("cpu"))
+>>>>>>> a85257dde9e4ae6445a0d39a6bdfe48254778e0f
             fusion.update(sem_logits)
             
 
@@ -142,9 +151,15 @@ class SegmentationModule(nn.Module):
             if do_flip:
                 # Main orientation
                 x_up, sem_logits = self._network(flip(x, -1), scale)
+<<<<<<< HEAD
                 sem_logits = functional.upsample(sem_logits, size=out_size, mode='bilinear', align_corners=True)
                 fusion.update(flip(sem_logits, -1))
                 x_up_all.append(flip(functional.upsample(x_up, size=out_size, mode='bilinear', align_corners=True).to("cpu"), -1))
+=======
+                sem_logits = functional.interpolate(sem_logits, size=out_size, mode='bilinear', align_corners=True)
+                fusion.update(flip(sem_logits, -1))
+                x_up_all.append(flip(functional.interpolate(x_up, size=out_size, mode='bilinear', align_corners=True).to("cpu"), -1))
+>>>>>>> a85257dde9e4ae6445a0d39a6bdfe48254778e0f
         x_up = torch.cat(x_up_all, 1)
         return x_up, fusion.output()
 
@@ -173,11 +188,19 @@ def main():
     )
     for dir_ in os.listdir('/data/JAAD_clip_images'):
         dir_ = dir_.split('.')[0]
+<<<<<<< HEAD
         os.system('mkdir -p /workspace/caozhangjie/inplace_abn/JAAD_features_occl/'+dir_)
         os.system('mkdir -p /workspace/caozhangjie/inplace_abn/JAAD_pos_occl/'+dir_)
         os.system('mkdir -p /workspace/caozhangjie/inplace_abn/JAAD_seg_occl/'+dir_)
 
     dataset = SegmentationDataset('/data/JAAD_clip_images', '/workspace/caozhangjie/inplace_abn/JAAD_vbb/vbb_full', '/workspace/caozhangjie/inplace_abn/JAAD_seg_occl', '/workspace/caozhangjie/inplace_abn/JAAD_features_occl', '/workspace/caozhangjie/inplace_abn/JAAD_pos_occl', transformation, "train", [args.start,args.start+60], 100)
+=======
+        os.system('mkdir -p /workspace/caozhangjie/inplace_abn/JAAD_features/'+dir_)
+        os.system('mkdir -p /workspace/caozhangjie/inplace_abn/JAAD_pos/'+dir_)
+        os.system('mkdir -p /workspace/caozhangjie/inplace_abn/JAAD_seg/'+dir_)
+
+    dataset = SegmentationDataset('/data/JAAD_clip_images', '/workspace/caozhangjie/inplace_abn/JAAD_vbb/vbb_full', '/workspace/caozhangjie/inplace_abn/JAAD_seg', '/workspace/caozhangjie/inplace_abn/JAAD_features', '/workspace/caozhangjie/inplace_abn/JAAD_pos', transformation, "train", [args.start,args.start+30])
+>>>>>>> a85257dde9e4ae6445a0d39a6bdfe48254778e0f
     data_loader = DataLoader(
         dataset,
         batch_size=1,
@@ -195,8 +218,11 @@ def main():
 
             img = rec["img"].cuda(non_blocking=True)
             x_up, (probs, preds) = model(img, scales, args.flip)
+<<<<<<< HEAD
             x_up = x_up.cpu()
             
+=======
+>>>>>>> a85257dde9e4ae6445a0d39a6bdfe48254778e0f
 
             for i, (prob, pred) in enumerate(zip(torch.unbind(probs, dim=0), torch.unbind(preds, dim=0))):
                 out_size = rec["size"][i]
@@ -209,8 +235,11 @@ def main():
                 pred = pred.cpu()
                 pred_img = get_pred_image(pred, out_size, args.output_mode == "palette")
                 pred_img.save(rec["seg_out"][i])
+<<<<<<< HEAD
                 #torch.save(x_up.cpu(), rec['raw_feature_out'][i])
                 x_up = x_up.cpu()
+=======
+>>>>>>> a85257dde9e4ae6445a0d39a6bdfe48254778e0f
                 width_dict, height_dict = get_box(pred)
                 features = []
                 spp_scales = [4,2,1]
@@ -225,7 +254,11 @@ def main():
                                 raw_feature = x_up[:,:,height_dict[j][0]:height_dict[j][1]+1, width_dict[j][0]:width_dict[j][1]+1]
                                 position.append([width_dict[j][0], height_dict[j][0], \
                                 width_dict[j][1]+1-width_dict[j][0], height_dict[j][1]+1-height_dict[j][0]])
+<<<<<<< HEAD
                                 spp_feature = spatial_pyramid_pool(raw_feature.cuda().detach(), 1, [raw_feature.size(2), raw_feature.size(3)], [4, 2, 1]).cpu()
+=======
+                                spp_feature = spatial_pyramid_pool(raw_feature, 1, [raw_feature.size(2), raw_feature.size(3)], [4, 2, 1])
+>>>>>>> a85257dde9e4ae6445a0d39a6bdfe48254778e0f
                                 features.append(spp_feature)
                             else:
                                 features.append(torch.zeros([1, feature_dim]))
@@ -238,8 +271,13 @@ def main():
                     if ped_appear[j] > 0 and (bbox[2]>=width_threshold and bbox[3] >=height_threshold):
                         ped_raw_feature = x_up[:,:,bbox[1]:bbox[1]+bbox[3], \
                                             bbox[0]:bbox[0]+bbox[2]]
+<<<<<<< HEAD
                         features.append(spatial_pyramid_pool(ped_raw_feature.cuda().detach(), \
                             1, [ped_raw_feature.size(2), ped_raw_feature.size(3)], [4, 2, 1]).cpu())
+=======
+                        features.append(spatial_pyramid_pool(ped_raw_feature, \
+                            1, [ped_raw_feature.size(2), ped_raw_feature.size(3)], [4, 2, 1]))
+>>>>>>> a85257dde9e4ae6445a0d39a6bdfe48254778e0f
                     else:
                         features.append(torch.zeros([1, feature_dim]))
                     position.append([bbox[i] for i in range(4)])
@@ -249,7 +287,10 @@ def main():
                 #print(position.size())
                 torch.save(features, rec['feature_out'][i])
                 torch.save(position, rec['pos_out'][i])
+<<<<<<< HEAD
                 
+=======
+>>>>>>> a85257dde9e4ae6445a0d39a6bdfe48254778e0f
 
             #    # Optionally save probabilities
             #    if args.output_mode == "prob":
@@ -270,7 +311,11 @@ def spatial_pyramid_pool(previous_conv, num_sample, previous_conv_size, out_pool
         w_wid = int(math.ceil(previous_conv_size[1] / out_pool_size[i]))
         h_pad = (h_wid*out_pool_size[i] - previous_conv_size[0] + 1)//2
         w_pad = (w_wid*out_pool_size[i] - previous_conv_size[1] + 1)//2
+<<<<<<< HEAD
         maxpool = nn.MaxPool2d((h_wid, w_wid), stride=(h_wid, w_wid), padding=(h_pad, w_pad)).cuda()
+=======
+        maxpool = nn.MaxPool2d((h_wid, w_wid), stride=(h_wid, w_wid), padding=(h_pad, w_pad))
+>>>>>>> a85257dde9e4ae6445a0d39a6bdfe48254778e0f
         x = maxpool(previous_conv)
         if(i == 0):
             spp = x.view(num_sample,-1)

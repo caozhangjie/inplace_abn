@@ -7,6 +7,7 @@ from os import path
 from torch.utils.data import Dataset
 import os
 import os.path as opath
+<<<<<<< HEAD
 import numpy as np
 import pdb
 import random
@@ -93,6 +94,8 @@ def pil_loader(path):
     with open(path, 'rb') as f:
         with Image.open(f) as img:
             return img.convert('RGB')
+=======
+>>>>>>> a85257dde9e4ae6445a0d39a6bdfe48254778e0f
 
 class SegmentationDataset(Dataset):
     _EXTENSIONS = ["*.jpg", "*.jpeg", "*.png"]
